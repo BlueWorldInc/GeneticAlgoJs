@@ -1,0 +1,6 @@
+Il faut en premier lieu faire un algo simple.
+Pour cela il faut crée:
+-des individus avec des genes
+-des constantes
+-une population
+-l'algo
