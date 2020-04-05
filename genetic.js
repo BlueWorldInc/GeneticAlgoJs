@@ -6,6 +6,9 @@ const TOURNAMENT_SIZE = 5;
 const CROSSOVER_RATE = 0.50;
 const MUTATION_RATE = 0.15;
 
+const BINARY_LENGTH = 10;
+const MAX_RANGE = 10;
+
 class Individual {
 
     constructor() {
@@ -48,6 +51,50 @@ class Individual {
 
 }
 
+class IndividualForDouble {
+
+    constructor() {
+        this.fitness;
+        this.genome = Array(BINARY_LENGTH).fill();
+        this.createGenome();
+        this.calcFitness();
+    }
+
+    createGenome() {
+        for (let i = 0; i < BINARY_LENGTH; i++) {
+            this.genome[i] = this.createGene();
+        }
+    }
+
+    createGene() {
+        return Math.round(Math.random());
+    }
+
+    modifyGene(index, gene) {
+        this.genome[index] = gene;
+    }
+
+    binaryToDouble() {
+        let double = 0;
+        for (var i = 0; i < BINARY_LENGTH; i++) {
+            double += this.genome[i] * Math.pow(2, (BINARY_LENGTH - i - 1));
+        }
+        double = double / 1024;
+        return double;
+    }
+
+    calcFitness() {
+        this.fitness = 0;
+        let x = this.binaryToDouble() * MAX_RANGE;
+        this.fitness = (Math.sin(x) * ((x - 2) * (x - 2)) + 3);
+    }
+
+    getFitness() {
+        return this.fitness;
+    }
+
+}
+
 class Population {
 
     constructor(populationSize) {
@@ -57,7 +104,7 @@ class Population {
 
     createPopulation(populationSize) {
         for (let i = 0; i < populationSize; i++) {
-            this.genomePopulation[i] = new Individual();
+            this.genomePopulation[i] = new IndividualForDouble();
         }
     }
 
@@ -83,7 +130,7 @@ class GeneticAlgo {
 
     crossOver(individual1, individual2) {
 
-        let newIndividual = new Individual();
+        let newIndividual = new IndividualForDouble();
 
         for (let i = 0; i < CHROMOSOME_LENGTH; i++) {
             if (Math.random() <= CROSSOVER_RATE) {
@@ -141,6 +188,8 @@ class GeneticAlgo {
 
 }
 
+////////////////////////////ALGO 1////////////////////////////////////////
+/*
 var population = new Population(100);
 var algo = new GeneticAlgo();
 var safe = 0;
@@ -149,26 +198,29 @@ var safe = 0;
 
 while (population.getFittest().fitness !== MAX_FITNESS && safe < 100) {
     population = algo.getNewPopulation(population);
-    // for (let i = 0; i < POPULATION_SIZE; i++) {
-    //     if (Math.random() > CROSSOVER_RATE) {
-    //         let individual1 = population.genomePopulation[i];
-    //         let individual2 = algo.randomSelection(population);
-    //         // console.log("a");
-    //         // console.log(population.genomePopulation[i]);
-    //         population.genomePopulation[i] = algo.crossOver(individual1, individual2);
-    //         // console.log("b");
-    //         // console.log(population.genomePopulation[i]);
-    //     }
-    // }
-    // for (let i = 0; i < POPULATION_SIZE; i++) {
-    //     if (Math.random() > MUTATION_RATE) {
-    //         let individual1 = population.genomePopulation[i];
-    //         population.genomePopulation[i] = algo.mutation(individual1);
-    //     }
-    // }
-
     console.log(population.getFittest().fitness);
     console.log(population.getFittest().genome.toString());
     safe++;
 }
+*/
 
+////////////////////////////ALGO 2////////////////////////////////////////
+// let fn = new IndividualForDouble();
+// console.log(fn.genome.toString());
+// console.log(fn.binaryToDouble() * MAX_RANGE);
+// console.log(fn.fitness);
+
+
+
+var population = new Population(100);
+var algo2 = new GeneticAlgo();
+var generation = 0;
+
+while (generation < 10) {
+    population = algo2.getNewPopulation(population);
+    console.log("Generation: " + generation);
+    console.log("Fittest individual Genotype: " + population.getFittest().genome.toString());
+    console.log("Fittest individual Value: " + population.getFittest().binaryToDouble() * MAX_RANGE);
+    console.log("Fittest individual Fitness: " + population.getFittest().fitness);
+    generation++;
+}
